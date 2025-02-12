@@ -14,6 +14,13 @@ export function Header() {
           <Typography variant="h3" as={Link} href="/">
             {SiteConfig.title}
           </Typography>
+          <Typography
+                        as={Link}
+                        variant="link"
+                        href={`/explore`}
+                      >
+                        Explorer
+                      </Typography>
         </div>
 
         <div className="flex flex-1 items-center justify-end space-x-4">
