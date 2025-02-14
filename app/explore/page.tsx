@@ -21,24 +21,13 @@ import { Badge } from '@/components/ui/badge';
 
 import { notFound } from 'next/navigation';
 import { CourseCard } from '../courses/CourseCard';
+import { getCourses } from '../courses/courses.query';
 
   export default async function CoursesPage({params}: {params: {courseId: string}}) {
     const prisma = new PrismaClient();
     const session = await getAuthSession();
-    const courses = await prisma.course.findMany({
-        select: {
-            name: true,
-            image: true,
-            id: true,
-            creator: {
-                select: {
-                    name: true ,
-                    image: true,
-                }
-            }
-        },
-    });
-    
+    const courses = await getCourses();
+    console.log(courses);
     if (!session) {
       notFound();
     }

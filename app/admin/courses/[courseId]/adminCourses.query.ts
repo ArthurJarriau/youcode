@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-export const getCourse = async (courseId: string, userId: string,page: number) => {
+export const getAdminCourses = async (courseId: string, userId: string,page: number) => {
     const courses = await prisma.course.findUnique({
         where: {
             creatorId: userId,

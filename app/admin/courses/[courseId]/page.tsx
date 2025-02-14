@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAuthSession } from "@/lib/auth";
 import { PrismaClient } from "@prisma/client";
-import { getCourse } from "./course.query";
+import { getAdminCourses } from "./adminCourses.query";
 import { Layout, LayoutContent, LayoutHeader, LayoutTitle } from "@/components/layout/layout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,7 +17,7 @@ export default async function Page({params,searchParams}: {params: {courseId: st
     const session = await getAuthSession();
     const prisma = new PrismaClient();
     
-    const course = await getCourse(courseId, session.user.id,page);
+    const course = await getAdminCourses(courseId, session.user.id,page);
     console.log(course);
     return (
         <Layout>
