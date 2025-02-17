@@ -1,23 +1,17 @@
-import { Badge } from '@/components/ui/badge'
-import { Typography } from '@/components/ui/typography'
-import { Lesson } from '@prisma/client'
-import React from 'react'
-
+import { Badge } from '@/components/ui/badge';
+import { Typography } from '@/components/ui/typography';
+import Link from 'next/link';
+import { AdminLessonItemType } from './lessons.query';
 export type LessonItemProps = {
-    lesson: Lesson
-    }
-
-
-export default function LessonItem(props: LessonItemProps) {
+  lesson: AdminLessonItemType;
+};
+export const AdminLessonItem = ({ lesson }: LessonItemProps) => {
   return (
-    <div className='border border-border hover:bg-accent transition-colors bg-card px-2 py-1 rounded flex items-center'>
-        
-        <Typography variant="large">
-            {props.lesson.name}
-        </Typography>
-        <Badge className='ml-auto'>
-            {props.lesson.state}
-        </Badge>
-    </div>
-  )
-}
+    <Link href={`/courses/${lesson.courseId}/lessons/${lesson.id}`}>
+      <div className="flex items-center rounded border border-border bg-card px-4 py-2 transition-colors hover:bg-accent">
+        <Typography variant="large">{lesson.name}</Typography>
+        <Badge className="ml-auto">{lesson.state}</Badge>
+      </div>
+    </Link>
+  );
+};
