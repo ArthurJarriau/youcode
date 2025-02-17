@@ -27,7 +27,7 @@ import { getCourses } from '../courses/courses.query';
     const prisma = new PrismaClient();
     const session = await getAuthSession();
     const courses = await getCourses();
-    console.log(courses);
+    
     if (!session) {
       notFound();
     }

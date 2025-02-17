@@ -22,9 +22,7 @@ import Link from 'next/link';
 export default async function CoursesPage() {
   const prisma = new PrismaClient();
   const session = await getAuthSession();
-  // console.log(session);
-  // const courses = await prisma.course.findMany();
-  // console.log(courses);
+  
 
   const courses = await prisma.course.findMany({
     where: {

@@ -18,7 +18,7 @@ export default async function Page({params,searchParams}: {params: {courseId: st
     const prisma = new PrismaClient();
     
     const course = await getAdminCourses(courseId, session.user.id,page);
-    console.log(course);
+   
     return (
         <Layout>
       <LayoutHeader>

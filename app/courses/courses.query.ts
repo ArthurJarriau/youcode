@@ -1,16 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { use } from "react";
 
 export const getCourses = async (userId?: string) => {
     return await prisma.course.findMany({
         where: userId ? {
-            users: {
+            users: { 
                 some: {
-                    userId
+                    userId: userId 
                 }
             }
-        }: undefined,
+        } : undefined,
         select: {
             id: true,
             name: true,
@@ -24,5 +23,6 @@ export const getCourses = async (userId?: string) => {
         }
     });
 }
+
 
 export type CoursesCard = Prisma.PromiseReturnType<typeof getCourses>[number];
