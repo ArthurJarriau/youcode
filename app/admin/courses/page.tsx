@@ -41,10 +41,13 @@ export default async function CoursesPage() {
         <Card>
           <CardContent className="mt-4">
             <Table>
-              <TableHeader>
+            <TableHeader>
+              <TableRow>
                 <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
-              </TableHeader>
+              </TableRow>
+            </TableHeader>
+
               <TableBody>
                 {courses?.map((course) => (
                   <TableRow>

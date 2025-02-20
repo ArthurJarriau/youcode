@@ -58,11 +58,11 @@ const FormSchema = z.object({
               >
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="image">Image URL</Label>
-                  <Input defaultValue={session?.user.image} name="image" id="image" />
+                  <Input defaultValue={session?.user.image || ''} name="image" id="image" />
                 </div>
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="name">Name</Label>
-                  <Input defaultValue={session?.user.name} name="name" id="name" />
+                  <Input defaultValue={session?.user.name || ''} name="name" id="name" />
                 </div>
                 {searchParams.error && (
                   <Typography>Error: {searchParams.error as string}</Typography>
