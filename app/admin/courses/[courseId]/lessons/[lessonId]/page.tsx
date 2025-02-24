@@ -18,39 +18,32 @@ import { Badge } from '@/components/ui/badge';
   } from '@/components/ui/table';
   import { Typography } from '@/components/ui/typography';
   import { getAuthSession } from '@/lib/auth';
-  import { PrismaClient } from "@prisma/client";
-import { getCourseLessons } from './lessons.query';
 import { notFound } from 'next/navigation';
-import { AdminLessonItem } from './LessonItem';
+import { getAdminLesson } from './lesson.query';
+import { LessonDetails } from './form/LessonDetailsForm';
 
-
-  export default async function CoursesPage({params}: {params: {courseId: string}}) {
-    const prisma = new PrismaClient();
-    const session = await getAuthSession();
-    const course = params.courseId;
-  
-    const courseLessons = await getCourseLessons({courseId: course, userId: session?.user.id})
-    
-    const lessons = courseLessons?.lessons;
+  export default async function LessonPage({params}: {params: {lessonId: string}}) {
    
+    const session = await getAuthSession();
     
-    if (!session) {
+    const lesson = await getAdminLesson(params.lessonId, session.user.id);
+    
+    
+    if (!lesson) {
       notFound();
     }
     return (
       <Layout>
         <LayoutHeader>
-          <LayoutTitle>Lessons - {courseLessons?.name}</LayoutTitle>
+          <LayoutTitle>{lesson.name}</LayoutTitle>
         </LayoutHeader>
         <LayoutContent className='flex flex-col gap-4 lg:flex-row'>
           <Card className='flex-[2]'>
             <CardHeader>
-                <CardTitle>Lessons</CardTitle>
+                <CardTitle>Details</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-              {lessons?.map((lesson) => (
-                <AdminLessonItem lesson={lesson} key={lesson.id}/>
-              ))}
+              <LessonDetails defaultValue={lesson} />
             </CardContent>
           </Card>
         </LayoutContent>

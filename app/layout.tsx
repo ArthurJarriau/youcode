@@ -8,6 +8,7 @@ import { Inter } from 'next/font/google';
 import { PropsWithChildren } from 'react';
 import { Providers } from './Providers';
 import './globals.css';
+import { Toaster } from 'sonner';
 
 const fontSans = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
               <div className="flex-1">{children}</div>
               <Footer />
             </div>
+            <Toaster />
             <TailwindIndicator />
           </Providers>
         </body>
