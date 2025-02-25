@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import {
     Layout,
+    LayoutActions,
     LayoutContent,
     LayoutHeader,
     LayoutTitle,
@@ -21,6 +22,8 @@ import { Badge } from '@/components/ui/badge';
 import { notFound } from 'next/navigation';
 import { getAdminLesson } from './lesson.query';
 import { LessonDetails } from './form/LessonDetailsForm';
+import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button';
 
   export default async function LessonPage({params}: {params: {lessonId: string}}) {
    
@@ -37,6 +40,11 @@ import { LessonDetails } from './form/LessonDetailsForm';
         <LayoutHeader>
           <LayoutTitle>{lesson.name}</LayoutTitle>
         </LayoutHeader>
+        <LayoutActions>
+          <Link href={`/admin/courses/${lesson.courseId}/lessons`} className={buttonVariants({size: 'sm', variant: 'secondary'})}>
+           Back
+          </Link>
+        </LayoutActions>
         <LayoutContent className='flex flex-col gap-4 lg:flex-row'>
           <Card className='flex-[2]'>
             <CardHeader>
