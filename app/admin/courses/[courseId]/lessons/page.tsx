@@ -13,11 +13,12 @@ import {
   import { PrismaClient } from "@prisma/client";
 import { getCourseLessons } from './lessons.query';
 import { notFound, redirect } from 'next/navigation';
-import { AdminLessonItem } from './LessonItem';
+import { AdminLessonItem, AdminLessonItemSortable } from './LessonItem';
 import { SubmitButton } from '@/components/form/SubmitButton';
 import { getSession } from 'next-auth/react';
 import { createLesson } from './lesson.action';
 import Link from 'next/link';
+import { AdminLessonSortable } from './[lessonId]/LessonSortable';
 
 
   export default async function CoursesPage({params}: {params: {courseId: string}}) {
@@ -45,9 +46,7 @@ import Link from 'next/link';
                 <CardTitle>Lessons</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-              {lessons?.map((lesson) => (
-                <AdminLessonItem lesson={lesson} key={lesson.id}/>
-              ))}
+              <AdminLessonSortable items={courseLessons?.lessons} />
               <form action={createLesson}>
                 <input type="hidden" name="courseId" value={params.courseId} />
                 <SubmitButton size="sm" variant="secondary">

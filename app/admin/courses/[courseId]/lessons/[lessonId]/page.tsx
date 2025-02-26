@@ -6,18 +6,9 @@ import {
     LayoutHeader,
     LayoutTitle,
   } from '@/components/layout/layout';
-  import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+
   import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-  import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from '@/components/ui/table';
-  import { Typography } from '@/components/ui/typography';
+  
   import { getAuthSession } from '@/lib/auth';
 import { notFound } from 'next/navigation';
 import { getAdminLesson } from './lesson.query';
