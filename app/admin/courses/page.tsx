@@ -7,8 +7,9 @@ import {
   LayoutTitle,
 } from '@/components/layout/layout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -20,6 +21,7 @@ import {
 import { Typography } from '@/components/ui/typography';
 import { getAuthSession } from '@/lib/auth';
 import { PrismaClient } from "@prisma/client";
+import { Menu } from 'lucide-react';
 import Link from 'next/link';
 export default async function CoursesPage() {
   const prisma = new PrismaClient();
@@ -50,6 +52,7 @@ export default async function CoursesPage() {
               <TableRow>
                 <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
+                
               </TableRow>
             </TableHeader>
 
@@ -73,6 +76,7 @@ export default async function CoursesPage() {
                         {course.name}
                       </Typography>
                     </TableCell>
+                    
                   </TableRow>
                 ))}
               </TableBody>

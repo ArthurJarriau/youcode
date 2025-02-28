@@ -8,7 +8,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import { CoursePaginationButton } from "@/features/pagination/PaginationButton";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Menu } from "lucide-react";
+import { revalidatePath } from "next/cache";
+import { Badge } from "@/components/ui/badge";
 
 export default async function Page({params,searchParams}: {params: {courseId: string}, searchParams: Promise<{ [key: string]: string | string[] | undefined }>}) {
     const slug = params.courseId;
@@ -35,6 +39,8 @@ export default async function Page({params,searchParams}: {params: {courseId: st
                 <TableRow> 
                     <TableHead>Image</TableHead>
                     <TableHead>Name</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className='text-end'>Actions</TableHead>
                 </TableRow>
                 </TableHeader>
               <TableBody>
@@ -56,6 +62,53 @@ export default async function Page({params,searchParams}: {params: {courseId: st
                       >
                         {user.email}
                       </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">
+                        {user.canceled ? 'Canceled' : 'Active'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className='flex flex-row-reverse'>
+                     <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Button size='sm' variant="secondary">
+                          <Menu size={16} />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent asChild>
+                        <form>
+                          <button formAction={async () => {
+                            "use server"
+                            const session = await getAuthSession();
+                            const courseId = params.courseId
+                            const userId = user.id
+                            const courseOnUser = await prisma.courseOnUser.findFirst({
+                              where: {
+                               userId: userId,
+                               course:{
+                                  id: courseId,
+                                  creatorId: session?.user.id
+                               }
+                              }
+                            })
+                            if (!courseOnUser) {
+                              return;
+                            }
+                            await prisma.courseOnUser.update({
+                              where: {
+                                id: courseOnUser.id,
+                              },
+                              data: {
+                                canceledAt: courseOnUser.canceledAt ? null : new Date(),
+                              },
+                            });
+                            revalidatePath(`/admin/courses/${courseId}`)
+                          }}>
+                          {user.canceled ? 'Activate' : 'Cancel'}
+                          </button>
+                        </form>
+                      </DropdownMenuContent>
+                     </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))}
