@@ -20,16 +20,17 @@ import {
       courseId: params.courseId,
       userId: session?.user.id,
     });
+    const userId = session?.user.id;
     if (!course) {
       notFound();
     }
     return (
       <Layout>
         <LayoutHeader>
-          <LayoutTitle>Your courses</LayoutTitle>
+          <LayoutTitle>Your course</LayoutTitle>
         </LayoutHeader>
         <LayoutContent>
-          <Course course={course} />
+          <Course course={course} userId={userId}/>
         </LayoutContent>
       </Layout>
     );

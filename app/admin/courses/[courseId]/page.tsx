@@ -17,7 +17,7 @@ import { toggleUserCourseStatus } from "./courses.action";
 
 export default async function Page({params,searchParams}: {params: {courseId: string}, searchParams: Promise<{ [key: string]: string | string[] | undefined }>}) {
     const slug = params.courseId;
-    const page = Number(searchParams.page ?? 1); 
+    const page = Number(searchParams.page ?? 0); 
     const courseId = slug;
     const session = await getAuthSession();
     const prisma = new PrismaClient();
@@ -72,8 +72,10 @@ export default async function Page({params,searchParams}: {params: {courseId: st
                     <TableCell className='flex flex-row-reverse'>
                      <DropdownMenu>
                       <DropdownMenuTrigger>
-                        <Button size='sm' variant="secondary">
-                          <Menu size={16} />
+                        <Button size='sm' variant="secondary" asChild>
+                          <span>
+                            <Menu size={16} />
+                          </span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent >

@@ -4,52 +4,109 @@ import { Typography } from '@/components/ui/typography';
 import { MarkdownProse } from '@/features/mdx/MarkdownProse';
 import { CourseType } from './course.query';
 import { LessonItem } from './lessons/[lessonId]/LessonItem';
+import { SubmitButton } from '@/components/form/SubmitButton';
+import { getAuthSession } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 export type CourseProps = {
   course: CourseType;
+  userId?: string;
 };
-export const Course = ({ course }: CourseProps) => {
-    console.log(course.lessons);
+export const Course = ({ course,userId }: CourseProps) => {
+  const isLogin = Boolean(userId);
   return (
-    <div className="flex flex-col items-start gap-4 lg:flex-row">
-      <Card className="flex-[2] hover:bg-accent">
-        <CardHeader className="flex flex-row gap-3 space-y-0">
-          <Avatar className="h-14 w-14 rounded">
-            <AvatarFallback>{course.name[0]}</AvatarFallback>
-            {course.image ? <AvatarImage src={course.image} /> : null}
-          </Avatar>
-          <div className="flex flex-col gap-3">
-            <CardTitle>{course.name}</CardTitle>
-            <div className="flex flex-row gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback>{course.name[0]}</AvatarFallback>
-                {course.creator.image ? (
-                  <AvatarImage src={course.creator.image} />
-                ) : null}
-              </Avatar>
-              <Typography variant="large" className=" text-muted-foreground">
-                {course.creator.name}
-              </Typography>
+    <div className="flex flex-col items-start gap-4 ">
+      <div className="flex flex-col w-full items-start gap-4 lg:flex-row">
+        <Card className="flex-[2] hover:bg-accent">
+          <CardHeader className="flex flex-row gap-3 space-y-0">
+            <Avatar className="h-14 w-14 rounded">
+              <AvatarFallback>{course.name[0]}</AvatarFallback>
+              {course.image ? <AvatarImage src={course.image} /> : null}
+            </Avatar>
+            <div className="flex flex-col gap-3">
+              <CardTitle>{course.name}</CardTitle>
+              <div className="flex flex-row gap-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback>{course.name[0]}</AvatarFallback>
+                  {course.creator.image ? (
+                    <AvatarImage src={course.creator.image} />
+                  ) : null}
+                </Avatar>
+                <Typography variant="large" className=" text-muted-foreground">
+                  {course.creator.name}
+                </Typography>
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <MarkdownProse markdown={course.presentation} />
-        </CardContent>
-      </Card>
-      <Card className="flex-1">
-        <CardHeader>
-          <CardTitle>Lessons</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-2">
-          {course.lessons.length > 0 ? course.lessons.map((lesson) => (
-            <LessonItem lesson={lesson} key={lesson.id} />
-          )) : <Card>
+          </CardHeader>
           <CardContent>
-            <Typography variant="large">No lessons found</Typography>
+            <MarkdownProse markdown={course.presentation} />
           </CardContent>
-          </Card>}
-        </CardContent>
-      </Card>
+        </Card>
+        <Card className="flex-1">
+          <CardHeader>
+            <CardTitle>Lessons</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            {course.lessons.length > 0 ? course.lessons.map((lesson) => (
+              <LessonItem lesson={lesson} key={lesson.id} />
+            )) : <Card>
+            <CardContent>
+              <Typography variant="large">No lessons found</Typography>
+            </CardContent>
+            </Card>}
+          </CardContent>
+        </Card>
+      </div>
+      {!course.isEnrolled && !course.isCanceled && isLogin ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form>
+              <SubmitButton formAction={async () => {
+                  "use server";
+                  const session = await getAuthSession();
+                  const joinCourse = await prisma.courseOnUser.create({
+                    data: {
+                      courseId: course.id,
+                      userId: session?.user.id,
+                    },
+                    select:{
+                      course:{
+                        select:{
+                          id:true,
+                          lessons:{
+                            orderBy:{
+                              rank:'asc'
+                            },
+                            take:1,
+                            select:{
+                              id:true
+                            }
+                          },
+                         
+                        },
+                       
+                      }
+                    }
+                  });
+                  const lesson = joinCourse.course.lessons[0];
+                  revalidatePath(`/courses/${course.id}`);
+                  if(!lesson){
+                    return;
+                  }
+                  redirect(`/courses/${course.id}/lessons/${lesson.id}`);
+                }}>
+                Join
+              </SubmitButton>
+            </form>
+          </CardContent>
+        </Card>
+      ) : null
+
+      }
     </div>
   );
 };

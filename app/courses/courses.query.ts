@@ -6,7 +6,8 @@ export const getCourses = async (userId?: string) => {
         where: userId ? {
             users: { 
                 some: {
-                    userId: userId 
+                    userId: userId ,
+                    canceledAt: null
                 }
             }
         } : undefined,
