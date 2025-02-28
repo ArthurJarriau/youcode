@@ -9,10 +9,11 @@ import { Typography } from "@/components/ui/typography";
 import Link from "next/link";
 import { CoursePaginationButton } from "@/features/pagination/PaginationButton";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
 import { revalidatePath } from "next/cache";
 import { Badge } from "@/components/ui/badge";
+import { toggleUserCourseStatus } from "./courses.action";
 
 export default async function Page({params,searchParams}: {params: {courseId: string}, searchParams: Promise<{ [key: string]: string | string[] | undefined }>}) {
     const slug = params.courseId;
@@ -75,38 +76,17 @@ export default async function Page({params,searchParams}: {params: {courseId: st
                           <Menu size={16} />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent asChild>
-                        <form>
-                          <button formAction={async () => {
-                            "use server"
-                            const session = await getAuthSession();
-                            const courseId = params.courseId
-                            const userId = user.id
-                            const courseOnUser = await prisma.courseOnUser.findFirst({
-                              where: {
-                               userId: userId,
-                               course:{
-                                  id: courseId,
-                                  creatorId: session?.user.id
-                               }
-                              }
-                            })
-                            if (!courseOnUser) {
-                              return;
-                            }
-                            await prisma.courseOnUser.update({
-                              where: {
-                                id: courseOnUser.id,
-                              },
-                              data: {
-                                canceledAt: courseOnUser.canceledAt ? null : new Date(),
-                              },
-                            });
-                            revalidatePath(`/admin/courses/${courseId}`)
-                          }}>
-                          {user.canceled ? 'Activate' : 'Cancel'}
+                      <DropdownMenuContent >
+                        <DropdownMenuItem asChild>
+                        <form >
+                          <button type="submit" formAction={async () => {
+                            "use server";
+                          await toggleUserCourseStatus(params.courseId, user.id);
+                        }}>
+                            {user.canceled ? 'Activate' : 'Cancel'}
                           </button>
                         </form>
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                      </DropdownMenu>
                     </TableCell>
