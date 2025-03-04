@@ -6,8 +6,11 @@ import {
   } from '@/components/layout/layout';
   import { getAuthSession } from '@/lib/auth';
   import { notFound } from 'next/navigation';
-  import { Course } from './Course';
-  import { getCourse } from './course.query';
+import { getCourse } from '../../../courses/[courseId]/course.query';
+import { CourseModal } from './CourseModal';
+import { Course } from '../../../courses/[courseId]/Course';
+
+
   export default async function CoursePage({
     params,
   }: {
@@ -21,17 +24,13 @@ import {
       userId: session?.user.id,
     });
     const userId = session?.user.id;
+    
     if (!course) {
       notFound();
     }
     return (
-      <Layout>
-        <LayoutHeader>
-          <LayoutTitle>Course</LayoutTitle>
-        </LayoutHeader>
-        <LayoutContent>
-          <Course course={course} userId={userId}/>
-        </LayoutContent>
-      </Layout>
+      <CourseModal course={course}>
+        <Course course={course} userId={userId} />
+      </CourseModal>
     );
   }

@@ -59,11 +59,7 @@ export const Course = ({ course,userId }: CourseProps) => {
         </Card>
       </div>
       {!course.isEnrolled && !course.isCanceled && isLogin ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
+       <div>
             <form>
               <SubmitButton formAction={async () => {
                   "use server";
@@ -102,8 +98,7 @@ export const Course = ({ course,userId }: CourseProps) => {
                 Join
               </SubmitButton>
             </form>
-          </CardContent>
-        </Card>
+          </div>
       ) : null
 
       }
