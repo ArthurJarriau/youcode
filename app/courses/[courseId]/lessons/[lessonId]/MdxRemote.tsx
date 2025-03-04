@@ -7,16 +7,15 @@ export type MdxProseProps = {
 
 export const MdxProse = (props: MdxProseProps) => {
   return (
-    <div className="prose m-auto dark:prose-invert xl:prose-xl">
+    <article className="prose m-auto dark:prose-invert xl:prose-xl">
       <MDXRemote
         options={{
           mdxOptions: {
-            // @ts-expect-error
             rehypePlugins: [rehypePrism],
           },
         }}
         source={props.markdown}
       />
-    </div>
+    </article>
   );
 };

@@ -13,7 +13,7 @@ export type CourseModalProps = PropsWithChildren<{
 export const CourseModal = (props: CourseModalProps) => {
     const router = useRouter();
     const pathname = usePathname();
-    const isCoursePage = pathname?.split('/').filter(Boolean).length === 2;
+    const isCoursePage = pathname?.startsWith('/courses/') && pathname?.split('/').length === 3;
 
   return (
     <Dialog
