@@ -28,9 +28,7 @@ export const getLesson = async (lessonId: string,userId = "-") => {
     if (!lesson) {
       return null;
     }
-    if (lesson.state !== 'PUBLIC' && lesson.users.length === 0) {
-      return lesson;
-    }
+    return lesson;
 }
 
 export type LessonType = NonNullable <Prisma.PromiseReturnType<typeof getLesson>>;

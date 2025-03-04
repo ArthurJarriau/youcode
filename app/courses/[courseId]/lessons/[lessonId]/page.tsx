@@ -1,40 +1,69 @@
-import React from 'react'
-import { getLesson } from './lesson.query'
-import { getAuthSession } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { notFound } from 'next/navigation'
-import { LessonNavigation } from './LessonNavigation'
-import { Card } from '@/components/ui/card'
+import {
+  Layout,
+  LayoutContent,
+  LayoutHeader,
+  LayoutTitle,
+} from '@/components/layout/layout';
+import { buttonVariants } from '@/components/ui/button';
+import { getAuthSession } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { Lesson } from './Lesson';
 
-export default async function LessonPage({params}:{params:{courseId:string,lessonId:string}}) {
-  const session = await getAuthSession()
-  const isAuthorized = await prisma.course.findUnique({
-    where:{
-      id:params.courseId,
-    },
-    select:{
-      users:{
-        where:{
-         userId:session?.user.id ?? '-',
-         canceledAt:null
-        }
-      }
-    }
-  })
-  
-  const lesson = await getLesson(params.lessonId,session?.user.id )
+import { getLesson } from './lesson.query';
+import { LessonsNavigation } from './LessonNavigation';
+
+export default async function LessonPage({
+  params,
+}: {
+  params: {
+    lessonId: string;
+    courseId: string;
+  };
+}) {
+  const session = await getAuthSession();
+  const lesson = await getLesson(params.lessonId, session?.user.id);
+
   if (!lesson) {
-    return notFound()
+    notFound();
   }
+
+  const isAuthorized = await prisma.course.findUnique({
+    where: {
+      id: params.courseId,
+    },
+    select: {
+      users: {
+        where: {
+          userId: session?.user.id ?? '-',
+          canceledAt: null,
+        },
+      },
+    },
+  });
+
   if (lesson.state !== 'PUBLIC' && !isAuthorized?.users.length) {
-    return <p>Not Authorized</p>
+    return (
+      <Layout>
+        <LayoutHeader>
+          <LayoutTitle>
+            You need to be enrolled in this course to view this lesson.
+          </LayoutTitle>
+        </LayoutHeader>
+        <LayoutContent>
+          <Link href={`/courses/${params.courseId}`} className={buttonVariants()}>
+            Join now
+          </Link>
+        </LayoutContent>
+      </Layout>
+    );
   }
+
   return (
-    <div>
-      <LessonNavigation />
-      <Card>
-        
-      </Card>
+    <div className="flex items-start gap-4 p-4">
+      <LessonsNavigation courseId={params.courseId} />
+      <Lesson lesson={lesson} />
     </div>
-  )
+  );
 }

@@ -1,16 +1,22 @@
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import rehypePrism from 'rehype-prism-plus';
 
-export type MdxRemoteProps = {
-    markdown: string
-}
+export type MdxProseProps = {
+  markdown: string;
+};
 
-export const MdxRemote = (props: MdxRemoteProps) => {
+export const MdxProse = (props: MdxProseProps) => {
   return (
-    <div className='prose dark:prose-invert xl:prose-xl'>
-       
-        <MDXRemote
-    source={props.markdown}
-  />
+    <div className="prose m-auto dark:prose-invert xl:prose-xl">
+      <MDXRemote
+        options={{
+          mdxOptions: {
+            // @ts-expect-error
+            rehypePlugins: [rehypePrism],
+          },
+        }}
+        source={props.markdown}
+      />
     </div>
-  )
-}
+  );
+};
