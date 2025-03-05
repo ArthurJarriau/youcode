@@ -65,6 +65,7 @@ model Course {
   image        String
   createdAt    DateTime @default(now())
   creatorId    String
+  state        CourseState @default(DRAFT)
   creator User           @relation(fields: [creatorId], references: [id])
   lessons Lesson[]
   users   CourseOnUser[]
@@ -84,6 +85,10 @@ enum LessonState {
   HIDDEN
   PUBLISHED
   PUBLIC
+}
+enum CourseState {
+  DRAFT
+  PUBLISHED
 }
 model LessonOnUser {
   id        String   @id @default(cuid())

@@ -1,23 +1,30 @@
+import { SubmitButton } from '@/components/form/SubmitButton';
+import { Alert, AlertTitle } from '@/components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Typography } from '@/components/ui/typography';
 import { MarkdownProse } from '@/features/mdx/MarkdownProse';
-import { CourseType } from './course.query';
-import { LessonItem } from './lessons/[lessonId]/LessonItem';
-import { SubmitButton } from '@/components/form/SubmitButton';
-import { getAuthSession } from '@/lib/auth';
+
 import { prisma } from '@/lib/prisma';
+import { AlertTriangle } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { CourseType } from './course.query';
+import { getAuthSession } from '@/lib/auth';
+import { LessonItem } from './lessons/[lessonId]/LessonItem';
+
+
 export type CourseProps = {
   course: CourseType;
   userId?: string;
 };
-export const Course = ({ course,userId }: CourseProps) => {
+
+export const Course = ({ course, userId }: CourseProps) => {
   const isLogin = Boolean(userId);
+
   return (
-    <div className="flex flex-col items-start gap-4 ">
-      <div className="flex flex-col w-full items-start gap-4 lg:flex-row">
+    <div className="flex flex-col items-start gap-4">
+      <div className="flex w-full flex-col items-start gap-4 lg:flex-row">
         <Card className="flex-[2] hover:bg-accent">
           <CardHeader className="flex flex-row gap-3 space-y-0">
             <Avatar className="h-14 w-14 rounded">
@@ -48,61 +55,83 @@ export const Course = ({ course,userId }: CourseProps) => {
             <CardTitle>Lessons</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            {course.lessons.length > 0 ? course.lessons.map((lesson) => (
+            {course.lessons.map((lesson) => (
               <LessonItem lesson={lesson} key={lesson.id} />
-            )) : <Card>
-            <CardContent>
-              <Typography variant="large">No lessons found</Typography>
-            </CardContent>
-            </Card>}
+            ))}
+            {course.lessons.length === 0 ? (
+              <Alert>
+                <AlertTriangle />
+                <AlertTitle>
+                  There are no lessons yet. Please come back later.
+                </AlertTitle>
+              </Alert>
+            ) : null}
           </CardContent>
         </Card>
       </div>
       {course.isCanceled ? <p>You can't join this course.</p> : null}
-      {!course.isEnrolled && !course.isCanceled && isLogin ? (
-       <div>
-            <form>
-              <SubmitButton formAction={async () => {
-                  "use server";
-                  const session = await getAuthSession();
-                  const joinCourse = await prisma.courseOnUser.create({
-                    data: {
-                      courseId: course.id,
-                      userId: session?.user.id,
-                    },
-                    select:{
-                      course:{
-                        select:{
-                          id:true,
-                          lessons:{
-                            orderBy:{
-                              rank:'asc'
-                            },
-                            take:1,
-                            select:{
-                              id:true
-                            }
-                          },
-                         
-                        },
-                       
-                      }
-                    }
-                  });
-                  const lesson = joinCourse.course.lessons[0];
-                  revalidatePath(`/courses/${course.id}`);
-                  if(!lesson){
-                    return;
-                  }
-                  redirect(`/courses/${course.id}/lessons/${lesson.id}`);
-                }}>
-                Join
-              </SubmitButton>
-            </form>
-          </div>
-      ) : null
+      {!course.isCanceled && !course.isEnrolled && isLogin ? (
+        <div>
+          <form>
+            <SubmitButton
+              formAction={async () => {
+                'use server';
 
-      }
+                const session = await getAuthSession();
+
+                
+                const toLinkCourse = await prisma.course.findUnique({
+                  where: {
+                    id: course.id,
+                    state: 'PUBLISHED',
+                  },
+                  select: {
+                   
+                    id: true,
+                    lessons: {
+                      orderBy: {
+                        rank: 'asc',
+                      },
+                      take: 1,
+                      select: {
+                        id: true,
+                        
+                      },
+                    },
+                  },
+                });
+
+               
+                if (!toLinkCourse) {
+                  return;
+                }
+
+                await prisma.courseOnUser.create({
+                  data: {
+                    userId: session.user.id,
+                    courseId: course.id,
+                  },
+                  select: {
+                    id: true,
+                  },
+                });
+
+                const lesson = toLinkCourse.lessons[0];
+
+                revalidatePath(`/courses/${course.id}`);
+
+                if (!lesson) {
+                  return;
+                }
+
+                redirect(`/courses/${course.id}/lessons/${lesson.id}`);
+              }}
+            >
+              Join
+            </SubmitButton>
+          </form>
+        </div>
+      ) : null}
     </div>
   );
 };

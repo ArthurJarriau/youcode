@@ -11,7 +11,6 @@ import { CoursePaginationButton } from "@/features/pagination/PaginationButton";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
-import { revalidatePath } from "next/cache";
 import { Badge } from "@/components/ui/badge";
 import { toggleUserCourseStatus } from "./courses.action";
 
@@ -110,6 +109,7 @@ export default async function Page({params,searchParams}: {params: {courseId: st
                     <CardTitle>{course.name}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-1">
+                <Badge className="w-fit">{course.state}</Badge>
                 <Typography>{course._count?.users} users</Typography>
                 <Typography>{course._count?.lessons} lessons</Typography>
                 <Link className={buttonVariants({variant: "outline"})} href={`/admin/courses/${course.id}/edit`}>Edit</Link>

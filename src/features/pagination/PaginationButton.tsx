@@ -13,6 +13,7 @@ export const CoursePaginationButton = (props: CoursePaginationButtonProps) => {
       <Button
         variant="outline"
         size="sm"
+        disabled={props.page === 0}
         onClick={() => {
           const searchParams = new URLSearchParams({
             page: String(props.page - 1),
@@ -26,6 +27,7 @@ export const CoursePaginationButton = (props: CoursePaginationButtonProps) => {
       <Button
         variant="outline"
         size="sm"
+        disabled={props.page === props.totalPage}
         onClick={() => {
           const searchParams = new URLSearchParams({
             page: String(props.page + 1),
